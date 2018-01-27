@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public abstract class GUIBase : MonoBehaviourWithStart {
 
-	private Button[] m_Buttons;
+	private Dictionary<string, InputField> m_InputFields = new Dictionary<string, InputField>();
 	private static Dictionary<string, GUIBase> m_GUIs = new Dictionary<string, GUIBase>();
 
 	public static GUIBase GetGUI(string name) {
@@ -20,8 +20,10 @@ public abstract class GUIBase : MonoBehaviourWithStart {
 	}
 
 	override protected sealed void Start () {
-		m_Buttons = GetComponentsInChildren<Button>();
-		foreach (var button in m_Buttons) {
+		foreach (var inputField in GetComponentsInChildren<InputField>()) {
+			m_InputFields.Add(inputField.name, inputField);
+		}
+		foreach (var button in GetComponentsInChildren<Button>()) {
 			button.onClick.AddListener(delegate() {
 				if (!OnButtonClick(button.name)) {
 					Debug.LogError("Unhandled button click: " + button.name);
@@ -30,14 +32,31 @@ public abstract class GUIBase : MonoBehaviourWithStart {
 		}
 		m_GUIs.Add(gameObject.name, this);
 		GUIStart();
+		Hide();
+	}
+
+	public string GetTextInput(string fieldName) {
+		InputField inputField;
+		if (m_InputFields.TryGetValue(fieldName, out inputField)) {
+			return inputField.text;
+		}
+		else {
+			throw new System.Exception("Unknown field by the name: " + fieldName);
+		}
+	}
+
+	private void SetVisibility(GameObject g, bool isVisible) {
+		foreach (var graphic in g.GetComponentsInChildren<MaskableGraphic>()) {
+			graphic.enabled = isVisible;
+		}
 	}
 
 	public void Show() {
-
+		SetVisibility(gameObject, true);
 	}
 
 	public void Hide() {
-
+		SetVisibility(gameObject, false);
 	}
 
 	abstract protected bool OnButtonClick(string button);

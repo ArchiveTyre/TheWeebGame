@@ -17,7 +17,10 @@ public class LoginGUI : GUIBase {
 	protected override bool OnButtonClick(string button) {
 		switch(button) {
 		case "LoginButton":
-			// Do something here!
+			var username = GetTextInput("UsernameField");
+			var password = GetTextInput("PasswordField");
+			Game.Instance.Client.PerformLogin(username, password);
+			Hide();
 			return true;
 		default:
 			return false;
