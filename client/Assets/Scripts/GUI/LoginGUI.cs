@@ -11,7 +11,6 @@ public class LoginGUI : GUIBase {
 
 	// Use this for initialization
 	protected override void GUIStart () {
-		Debug.Log("Hello From Login GUI!");
 	}
 
 	protected override bool OnButtonClick(string button) {

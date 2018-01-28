@@ -52,6 +52,8 @@ public class ForkKikanClient : MonoBehaviour {
 		case "login_or_reg":
 			GUIBase.GetGUI("LoginOrRegisterGUI").Show();
 			return true;
+		case "enter_player_pw":
+			return true;
 		case "enter_player_name":
 			GUIBase.GetGUI("LoginGUI").Show();
 			return true;
@@ -76,10 +78,14 @@ public class ForkKikanClient : MonoBehaviour {
 				prompt.Show();		
 				break;
 			}
-			case "promptString":
+			case "promptString": {
 				string str = rest.readRest();
 				Debug.Log("Prompt " + name + ": " + str);
+				var prompt = GUIBase.GetGUI("PromptStringGUI") as PromptStringGUI;
+				prompt.SetTitle(str);
+				prompt.Show();
 				break;
+			}
 			default:
 				Debug.LogError("Unsupported prompt type requested by server: " + type);
 				break;
@@ -88,7 +94,8 @@ public class ForkKikanClient : MonoBehaviour {
 	}
 
 	private void OnMessage(string message) {
-		if (m_Connected) {
+		if (m_Connected && message != null) {
+			Debug.Log("Message: " + message);
 			WordReader wr = new WordReader(message);
 			string commandName = wr.readWord();
 
@@ -108,7 +115,6 @@ public class ForkKikanClient : MonoBehaviour {
 				Debug.LogError("Unsupported command sent from server: " + commandName);
 				break;
 			}
-			Debug.Log("Message: " + message);
 		}
 		else {
 			m_Connection.StreamWriter.WriteLine("www.eit.se/rsb/0.9/client");
